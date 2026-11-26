@@ -1,0 +1,4 @@
+interface:
+  display_name: "需求规格生成器"
+  short_description: "Generate layered product and engineering specs"
+  default_prompt: "Use $requirements-spec-generator to turn this product idea into user stories, functional requirements, and implementation-ready requirement specs."
