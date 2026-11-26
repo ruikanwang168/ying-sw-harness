@@ -1,0 +1,4 @@
+interface:
+  display_name: "研发规格 PRD 生成"
+  short_description: "逐页面控件与逐接口逻辑生成研发规格"
+  default_prompt: "使用 $prd-gen 分析当前项目材料，逐页面覆盖所有控件和展示项，逐接口说明完整业务逻辑，并建立页面到接口及数据状态的映射。"
