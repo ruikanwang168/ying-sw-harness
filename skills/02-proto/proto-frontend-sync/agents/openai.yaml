@@ -1,0 +1,7 @@
+interface:
+  display_name: "前端原型同步"
+  short_description: "首次全量初始化 prototype-starter，已有原型按需求范围同步"
+  default_prompt: "使用 $proto-frontend-sync。首次全量初始化 prototype-starter，已有原型时按我指定的需求范围同步并验收。"
+  brand_color: "#2563EB"
+policy:
+  allow_implicit_invocation: true
