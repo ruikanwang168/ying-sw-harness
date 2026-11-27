@@ -7,9 +7,8 @@ description: >-
   面向 AI 辅助产品原型生成的流程控制技能。根据需求文档诊断输入、规划页面与交互、
   产出评审文档和执行索引、逐页生成原型，并检查完整性。
   适用于在 Cursor、Codex 或 Claude Code 中，根据 PRD、规格说明、用户故事或需求文档
-  生成多页面原型。可独立使用；当目标目录包含 design-system/、shared/ 和
-  scripts/new-feature.cjs 时，自动进入 prototype-starter 兼容模式。设计文档可选，
-  缺失时沿用 starter 现有样式。
+  生成多页面原型。可独立使用，也可直接扩展 prototype-starter 等使用 Mock 接口的
+  真实前端工程，沿用现有技术栈、样式、组件、路由和 Mock 机制；设计文档可选。
 ---
 
 # proto-generator
@@ -20,7 +19,7 @@ description: >-
 
 最终目标是根据需求文档生成完整、可运行或可预览的产品原型，避免遗漏页面、子页面、弹窗、抽屉、路由和深层交互。
 
-本技能必须能够在有或没有 `prototype-starter` 的情况下工作。不得要求用户先初始化 starter 工作区。检测到 starter 工作区时，将其作为增强的生成环境；否则继续以独立模式执行。
+本技能必须能够在有或没有 `prototype-starter` 的情况下工作。不得要求用户先初始化 starter 工作区。找到已有前端工程时，直接在工程内扩展；否则继续以独立模式执行。
 
 本技能不要求 AI 一次生成所有原型页面，而是通过以下环节控制完整的生成过程：
 
@@ -37,23 +36,24 @@ description: >-
 
 ## 工作区检测
 
-生成原型文件之前，检查目标目录。
+生成原型文件之前，定位实际前端工程：优先使用用户指定的工程路径；未指定时，检查目标目录本身及其直接子目录 `prototype-starter/`。结合项目说明、依赖或构建配置、源码和入口判断工程根目录，不仅凭目录名称判断。存在多个可用工程且上下文无法确定时，再询问本次使用哪个工程。
 
-只有当目标目录包含以下 starter 标志文件和目录时，才将其视为 `prototype-starter` 工作区：
+`prototype-starter` 可以是使用 Mock 接口的真实前端工程。找到该工程或其他已有前端工程时，进入 `prototype-starter-compatible` 模式，直接在现有工程中扩展。没有已有前端工程时，使用独立模式；不要要求用户先初始化 starter。
 
-```text
-design-system/
-shared/
-scripts/new-feature.cjs
-```
+后续源码路径、工具脚本和启动或检查命令均以定位到的工程根目录为基准；工程位于 `prototype-starter/` 子目录时，不在其外部另建前端项目。
 
-`DESIGN.md` 或 `design.md` 是可选设计输入，不参与工作区判定；缺失时沿用 starter 的现有样式。
+`DESIGN.md` / `design.md`、`design-system/`、`shared/` 和 `scripts/new-feature.cjs` 均不是准入条件，不因缺少这些路径而切换为独立模式。样式、公共组件、Mock 和工具脚本的路径以工程实际组织为准。
 
-如果上述标志文件或目录不齐全，继续以独立模式执行。不要停下来要求用户运行 `prototype-starter`。
+进入已有工程后，先按工程规则和扫描边界读取以下上下文，并在评审文档和执行索引中记录实际路径及约定：
+
+- 项目说明、`package.json`（如有）、锁文件及构建配置：确认框架、组件库、包管理器、启动和检查命令。
+- 页面入口、路由、菜单和布局：确认新页面的放置与接入方式，记录本次改动前已有的页面和路由。
+- 公共样式、主题、组件和代表性页面：确定可复用资源及现有视觉、交互风格。
+- 接口封装、数据类型及 Mock 配置和样例：确定请求、响应、状态管理和模拟数据的接入方式。
 
 ### 独立模式
 
-未检测到 starter 工作区时，使用独立模式。在此模式下：
+未检测到已有前端工程时，使用独立模式。在此模式下：
 
 1. 诊断需求输入。
 2. 生成 `prototype-index-review.md`。
@@ -65,19 +65,19 @@ scripts/new-feature.cjs
 
 ### Prototype-Starter 兼容模式
 
-检测到 starter 工作区时，使用 starter 兼容模式。在此模式下，本技能继续负责页面覆盖和任务控制，starter 资源则负责产品设计还原度和项目结构。
+检测到已有前端工程时，使用 starter 兼容模式。在此模式下，本技能负责页面覆盖和任务控制，现有工程提供技术栈、项目结构、视觉样式和 Mock 基础。
 
 附加规则：
 
 1. 根目录存在 `DESIGN.md` 或 `design.md` 时，读取并作为产品设计约束；不存在时，读取 starter 的共享样式、组件及已有页面或模板，沿用其布局、颜色、字体、间距和交互样式。不得仅因缺少设计文档而要求补充、阻塞生成或切换为独立模式。
-2. 存在 `design-system/fidelity-guardrails.json` 时，读取该文件。
-3. 存在 `design-system/shared-registry.json` 时，读取该文件。
-4. 根据 `prototype-index.md` 中已确认且未受阻的任务生成 `feature-manifest.json`。
-5. 优先使用 `node scripts/new-feature.cjs --manifest <feature-manifest.json>` 创建页面和场景骨架。
-6. 生成的页面必须复用 starter 的共享 CSS/JS 资源。
-7. 生成的页面必须保留 starter 元数据，例如 `data-page-key`、`data-page-kind`、`data-parent-page-key` 和 `data-surface`。设计源信息（如 `data-design-source-sha`、`data-design-contract-version`）按 starter 实际提供的值保留；缺少设计文档时不得伪造哈希或版本。
-8. 存在相应脚本时，运行 `node scripts/check-prototype-compliance.cjs`。
-9. 在最终完整性检查中，同时验证需求覆盖情况和 starter 兼容性。
+2. 沿用工程现有框架、组件库、目录结构、布局、路由和菜单，优先复用现有公共样式与组件；资源位置不限定为 `shared/`。
+3. 沿用现有接口封装、数据类型和 Mock 机制，为新页面补充模拟接口与数据，使操作及状态变化可以演示。除非用户另有要求，不接入真实后端，也不另建一套并行 Mock 机制。
+4. 工程存在设计护栏或共享注册表时读取并遵守，例如 `design-system/fidelity-guardrails.json`、`design-system/shared-registry.json`；不存在时依据现有代码和页面实现。
+5. 仅在现有工具需要 manifest 或用户明确要求时，根据已确认且未受阻的任务生成 `feature-manifest.json`；否则直接依据 `prototype-index.md` 执行。
+6. 工程有适用的页面生成脚本时，先核对其参数和清单契约，再优先使用。支持相应参数时可执行 `node scripts/new-feature.cjs --manifest <feature-manifest.json>`；没有适用脚本时，参考已有页面手动创建并接通路由和菜单。
+7. 按工程实际约定保留页面标识和元数据。只有工程使用时才要求 `data-page-key`、`data-page-kind`、`data-parent-page-key`、`data-surface` 等属性；设计源哈希和版本仅保留实际提供的值，不伪造，也不强加到未采用该约定的工程。
+8. 按项目已有命令执行适用的构建、类型或其他检查，并启动或预览验证关键页面、导航与 Mock 交互；存在合规检查脚本时同时运行，例如 `node scripts/check-prototype-compliance.cjs`。记录实际命令、结果及未验证项，不把缺少可选脚本视为失败。
+9. 最终完整性检查同时验证需求覆盖、工程集成、样式复用和 Mock 交互。原有页面与路由作为工程基线保留，不因未进入本次索引而判为违规；核对本次新增和修改的页面是否在已确认范围内。
 
 starter 兼容模式不得创建已确认的 `prototype-index.md` 范围之外的页面、弹窗、抽屉、侧边面板、确认交互、路由或注册表条目。如果发现遗漏的界面，必须先将其加入索引并标记为 `Needs Confirmation`，再生成。
 
@@ -441,7 +441,7 @@ interactive
 
 用户修改或确认评审文档后，应生成或更新 `prototype-index.md`，作为逐页生成原型的执行索引。
 
-在 starter 兼容模式下，确认 `prototype-index.md` 后再生成 `feature-manifest.json`。除非用户明确选择草稿或基于假设的生成方式，否则不得将带有 `Needs Confirmation` 或 `Needs Input` 的任务纳入清单。
+需要 manifest 时，确认 `prototype-index.md` 后再生成 `feature-manifest.json`。除非用户明确选择草稿或基于假设的生成方式，否则不得将带有 `Needs Confirmation` 或 `Needs Input` 的任务纳入清单。
 
 ## 工作流程
 
@@ -501,7 +501,7 @@ interactive
 
 该索引是逐页生成原型的权威依据。
 
-在 starter 兼容模式下，还应根据已确认的任务生成 `feature-manifest.json`，使 starter 脚本能够创建项目骨架，同时不遗漏页面覆盖范围。
+在 starter 兼容模式下，将工程路径、技术栈、样式与组件参考、路由和菜单入口、接口与 Mock 约定、验证命令写入索引。需要 manifest 时，再根据已确认任务生成 `feature-manifest.json`。
 
 ### 步骤 7：逐页生成原型
 
@@ -520,13 +520,13 @@ interactive
 
 AI 不得默默跳过任务。
 
-在 starter 兼容模式下，只要相应脚本可用，就应先通过 `node scripts/new-feature.cjs --manifest <feature-manifest.json>` 创建页面 / 场景骨架，再填充页面内容。
+在 starter 兼容模式下，按工程实际目录逐页实现，复用布局和组件，接入路由、菜单及 Mock 数据。存在适用生成脚本时按其契约创建骨架；没有时参考已有页面手动实现，不要求补建脚本。
 
 ## 功能清单规则
 
-`feature-manifest.json` 是需求规划向 starter 兼容项目生成交接的文件。只有在 `prototype-index.md` 已确认，或已根据用户评审完成更新后，才能生成该文件。
+`feature-manifest.json` 是可选的工具交接文件，仅在现有工具需要或用户明确要求时生成；没有清单消费工具时，执行索引足以控制生成。只有在 `prototype-index.md` 已确认，或已根据用户评审完成更新后，才能生成该文件。
 
-在 starter 兼容模式下：
+需要生成 manifest 时，先核对消费工具的实际契约。以下为本技能的默认映射约定；字段和结构应适配工具支持的格式，任务追溯和父子关系可在索引中保留：
 
 1. 仅纳入已确认且未被 `Needs Confirmation` 或 `Needs Input` 阻塞的任务。
 2. 保留 `iterationSlug`、`featureName`、`updatedAt`、`iterationName`、`sourceRequirement` 和 `sourceIndex`。
@@ -534,10 +534,10 @@ AI 不得默默跳过任务。
 4. 将抽屉、模态弹窗、侧边面板、确认交互、导入向导及其他独立界面转换为其父页面下的 `scenarios[]`。
 5. 为每个场景保留 `parentPageKey`。
 6. 包含 `sourceTaskIds`，使完整性检查能够将清单条目追溯到索引任务。
-7. 当任务对应已存在的 `DESIGN.md` / `design.md` 中的模式或 `design-system/shared-registry.json` 中的条目时，包含 `designPatternRefs`；缺少这些来源时，沿用 starter 现有样式，不编造模式引用。
+7. 当任务对应已存在的设计文档或共享注册表中的模式时，包含 `designPatternRefs`；缺少这些来源时，沿用 starter 现有样式，不编造模式引用。
 8. 除非用户明确选择了 `draft` 模式，否则不得将不确定的任务或已推断但未确认的任务放入清单。
 
-starter 兼容模式下的最小清单示例：
+适用于支持该结构的工具的清单示例：
 
 ```json
 {
@@ -597,8 +597,9 @@ starter 兼容模式下的最小清单示例：
 - `feature-manifest.json`（如有）
 - 已生成的原型文件
 - 路由与导航
-- 组件使用情况
-- starter 合规检查结果（在 starter 兼容模式下）
+- 组件及样式复用情况
+- 接口封装、Mock 数据与交互结果（已有工程时）
+- 工程构建或检查命令、运行或预览结果，以及合规检查结果（如有）
 
 输出 `prototype-completeness-check.md`。
 
@@ -638,7 +639,7 @@ starter 兼容模式下的最小清单示例：
 | 建议文件路径 | 建议的实现文件路径 |
 | 设计模式引用 | 相关的 DESIGN.md、starter 共享注册表或 UI 模式引用 |
 | 是否写入清单 | 是否应将该任务写入 feature-manifest.json |
-| 是否兼容 Starter | 该任务是否必须使用 starter 共享资源和元数据 |
+| 是否兼容 Starter | 该任务是否在已有工程内实现并沿用其技术栈、样式、路由和 Mock 约定 |
 | 状态 | Not Started / In Progress / Completed / Needs Confirmation / Needs Input / Needs Fix |
 | 检查结果 | 缺失、不确定或已完成的检查结果 |
 | 生成文件 | 该任务生成的文件 |
@@ -701,6 +702,7 @@ starter 兼容模式下的最小清单示例：
 5. 已具备基本交互行为。
 6. 已记录生成文件。
 7. 不存在阻塞任务的 `Needs Input` 问题。
+8. 在已有工程中实现时，已接入现有布局、组件和 Mock 机制，并验证任务所需的数据与交互行为。
 
 ## 最终验收标准
 
@@ -717,6 +719,7 @@ starter 兼容模式下的最小清单示例：
 9. 不存在未解决的 `Needs Confirmation`、`Needs Input` 或 `Needs Fix` 任务。
 10. `prototype-completeness-check.md` 确认没有遗漏必需的页面或核心交互。
 11. 原型项目能够基于选定的技术栈运行或预览。
+12. 在已有工程中实现时，沿用其技术栈和 Mock 机制，适用的工程检查及关键页面交互验证通过，并记录实际结果。
 
 ## 完整性检查规则
 
@@ -732,9 +735,10 @@ starter 兼容模式下的最小清单示例：
 8. 是否实现所有页面关系。
 9. 已生成页面是否具备相应路由。
 10. 生成文件是否与索引一致。
-11. 原型中是否存在未在索引中登记的页面。
+11. 本次是否新增了未在索引中登记的页面；原有页面按工程基线核对，不作为遗漏或违规。
 12. 是否仍有未解决的 `Needs Confirmation`、`Needs Input` 或 `Needs Fix` 任务。
 13. 原型是否可运行或可预览。
+14. 已有工程中的新页面是否复用实际公共资源，接通路由和菜单，并使用现有 Mock 机制完成关键交互。
 
 ## 默认响应行为
 

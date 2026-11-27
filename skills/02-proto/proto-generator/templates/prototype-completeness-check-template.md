@@ -26,6 +26,8 @@ owner: ying
 | 工作区模式 | standalone / prototype-starter-compatible |
 | 是否生成 feature-manifest.json | 是 / 否 / 不适用 |
 | 是否通过 starter compliance | 是 / 否 / 未运行 / 不适用 |
+| 是否通过适用工程检查 | 是 / 否 / 未验证 / 不适用；记录命令与结果 |
+| 关键 Mock 交互是否验证 | 是 / 否 / 未验证 / 不适用 |
 | 是否建议进入补充生成 | 是 / 否 |
 
 ### 总体说明
@@ -92,22 +94,28 @@ owner: ying
 
 ## 9. Manifest 与 Starter 兼容性检查
 
-> 仅在 prototype-starter-compatible 模式下必填。standalone 模式填写“不适用”。
+> 在 prototype-starter-compatible 模式下检查工程集成；manifest、元数据和合规脚本仅在工程采用相应约定时检查，否则填写“不适用”。standalone 模式填写“不适用”。
 
 | 检查项 | 期望 | 实际 | 检查结果 |
 |---|---|---|---|
-| 已确认任务是否进入 manifest | `prototype-index.md` 中已确认且无阻塞的页面/场景应进入 `feature-manifest.json` |  | 已通过 / 缺失 / 不适用 |
+| 已确认任务是否进入 manifest | 需要清单时，已确认且无阻塞的页面/场景应进入清单，格式适配消费工具 |  | 已通过 / 缺失 / 不适用 |
 | 阻塞任务是否排除 manifest | `Needs Confirmation` / `Needs Input` 不应进入 manifest，除非用户选择 draft |  | 已通过 / 异常 / 不适用 |
-| 页面是否由 starter 骨架生成 | 可用时应使用 `node scripts/new-feature.cjs --manifest` |  | 已通过 / 未使用 / 不适用 |
-| 页面是否引用 shared CSS/JS | 页面应复用 starter 的共享资源 |  | 已通过 / 缺失 / 不适用 |
+| 页面实现是否遵循工程约定 | 有适用生成脚本时按契约使用，没有时参考已有页面手动实现 |  | 已通过 / 异常 / 不适用 |
+| 页面是否复用公共资源 | 复用工程实际公共样式、组件和布局，不限定 shared/ 路径 |  | 已通过 / 缺失 / 不适用 |
 | 页面是否遵循设计依据 | 有设计文档时遵循文档；缺失时沿用 starter 现有样式，并记录参考文件 |  | 已通过 / 异常 / 不适用 |
-| 页面是否有稳定元数据 | `data-page-key`、`data-page-kind`、`data-surface` 等应存在 |  | 已通过 / 缺失 / 不适用 |
+| 页面标识是否符合工程约定 | 按实际路由、组件或元数据约定维护；仅在工程采用时检查 data-page-key 等属性 |  | 已通过 / 缺失 / 不适用 |
 | 页面是否携带设计源信息 | 按 starter 实际提供的值保留 `data-design-source-sha` 和 `data-design-contract-version`；未提供时标记不适用，不伪造 |  | 已通过 / 缺失 / 不适用 |
-| 是否运行 compliance | 应运行 `node scripts/check-prototype-compliance.cjs` |  | 已通过 / 未运行 / 不适用 |
+| 路由与菜单是否接通 | 新页面按工程既有方式接入，原有页面与路由保留 |  | 已通过 / 缺失 / 不适用 |
+| 是否沿用接口与 Mock 机制 | 复用接口封装、数据类型及 Mock 配置，新接口与数据按现有机制扩展 |  | 已通过 / 异常 / 不适用 |
+| 关键 Mock 交互是否可演示 | 按任务验证列表查询、表单提交、数据变化及所需状态反馈 |  | 已通过 / 未通过 / 未验证 / 不适用 |
+| 工程检查与运行结果 | 记录适用构建或类型检查、启动或预览命令及结果 |  | 已通过 / 未通过 / 未验证 / 不适用 |
+| 是否运行 compliance | 存在适用合规检查脚本时运行 |  | 已通过 / 未运行 / 不适用 |
 
 ---
 
 ## 10. 未登记页面检查
+
+> 区分工程原有页面与本次新增页面；原有页面不因未进入本次索引而判为违规或删除。本次新增页面应在已确认索引范围内。
 
 | Actual File / Route | 是否在 prototype-index.md | 是否在 feature-manifest.json | 是否允许存在 | 处理建议 |
 |---|---|---|---|---|

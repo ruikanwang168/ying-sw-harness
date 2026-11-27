@@ -19,10 +19,12 @@ owner: ying
 
 这个 skill 可以独立使用，也可以和 `prototype-starter` 协同使用，但不强依赖 `prototype-starter`：
 
-- 如果目标目录未同时具备 `design-system/`、`shared/`、`scripts/new-feature.cjs`，按 standalone 模式生成原型。
-- 如果目标目录具备上述三项 starter 工作区信号，自动进入 prototype-starter-compatible 模式：读取存在的 starter 护栏，生成 `feature-manifest.json`，优先通过 `scripts/new-feature.cjs --manifest` 创建页面骨架，并在检查脚本存在时运行 starter compliance。
+- `prototype-starter` 可以是接口使用 Mock 的真实前端工程。优先使用用户指定工程，否则检查目标目录本身及其直接子目录 `prototype-starter/`，结合项目说明、构建配置和源码定位工程根目录。
+- 找到已有前端工程时，进入 prototype-starter-compatible 模式，直接扩展现有工程；没有已有工程时，按 standalone 模式生成。`design-system/`、`shared/`、`scripts/new-feature.cjs` 均不是必需条件。
+- 沿用现有框架、组件库、目录结构、样式、布局、路由、菜单及接口封装，按现有 Mock 机制补充模拟接口和数据，不另起一套工程或 Mock 方案。
 - 根目录的 `DESIGN.md` 或 `design.md` 可选：存在时作为设计约束；不存在时读取并复用 starter 的共享样式、组件及已有页面或模板，沿用现有样式，不要求补充设计文档，也不因此退出兼容模式。
-- `proto-generator` 负责防止漏页面、漏弹窗、漏抽屉、漏路由；`prototype-starter` 负责设计系统一致性和工程结构约束。
+- 设计护栏、共享注册表、生成脚本及页面元数据按工程实际情况使用；仅在工具需要或用户要求时生成 `feature-manifest.json`，没有脚本时参考已有页面手动实现。
+- `proto-generator` 负责页面覆盖和任务控制；已有前端工程提供实现基础。完成后按项目实际命令检查构建或类型，验证页面、导航和 Mock 交互，并保留原有页面与路由。
 
 ## 最终输出是什么？
 
@@ -104,7 +106,7 @@ prototype-generation-log.md     原型生成过程日志
 prototype-completeness-check.md 最终完整性检查文档
 ```
 
-在 prototype-starter-compatible 模式下，还会生成：
+在现有工具需要或用户明确要求时，还可生成：
 
 ```text
 feature-manifest.json           给 starter 脚本创建页面/场景骨架的交接文件

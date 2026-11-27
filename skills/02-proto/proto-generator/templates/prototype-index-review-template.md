@@ -22,8 +22,11 @@ owner: ying
 | 判断依据 |  |
 | 是否可用于生成原型 | 是 / 否 / 部分可用 |
 | 工作区模式 | standalone / prototype-starter-compatible |
-| Starter 工作区判断依据 | 同时具备 design-system/、shared/ 和 scripts/new-feature.cjs / 不适用 |
+| Starter 工作区判断依据 | 用户指定路径 / 目标目录已有前端工程 / prototype-starter/ 子目录中的前端工程 / 不适用；记录实际根目录和依据 |
 | 设计依据 | DESIGN.md / design.md（可选） / Starter 现有样式；记录实际参考文件 |
+| 工程约定 | 技术栈、包管理器、布局、组件和样式的实际位置 |
+| 路由与 Mock 约定 | 菜单、路由、接口封装、类型和 Mock 的实际位置；记录原有页面与路由基线 |
+| 验证方式 | 实际启动、构建、适用检查命令及关键交互 |
 
 ### 1.2 输入成熟度
 
@@ -122,7 +125,8 @@ B --> C[页面B]
 | 技术栈 | React / Vue / HTML / 其他 |  |
 | UI 组件库 | Ant Design / Element Plus / Tailwind / 其他 |  |
 | 是否生成 feature-manifest.json | 是 / 否 / 不适用 |  |
-| 是否使用 starter shared 资产 | 是 / 否 / 不适用 |  |
+| 是否复用工程现有样式、组件和布局 | 是 / 否 / 不适用；路径以工程实际组织为准 |  |
+| 接口数据实现方式 | 沿用工程现有 Mock 机制 |  |
 
 ---
 
@@ -136,9 +140,11 @@ B --> C[页面B]
 | 缺少设计文档时的样式来源 | 沿用 starter 的共享样式、组件及已有页面或模板 |  |
 | 是否读取 fidelity-guardrails | 是，若文件存在 |  |
 | 是否读取 shared-registry | 是，若文件存在 |  |
-| 是否把确认后的任务转成 feature-manifest.json | 是 |  |
-| 是否通过 `scripts/new-feature.cjs --manifest` 创建骨架 | 是，若脚本存在 |  |
-| 是否排除未确认任务进入 manifest | 是 |  |
+| 是否把确认后的任务转成 feature-manifest.json | 仅在现有工具需要或用户要求时生成，适配工具契约 |  |
+| 是否通过工程生成脚本创建骨架 | 有适用脚本时核对参数后使用，没有时参考已有页面手动实现 |  |
+| 是否排除未确认任务进入 manifest | 需要生成清单时排除，draft 例外按所选模式处理 |  |
+| 是否沿用原有工程与 Mock | 复用技术栈、布局、组件、路由、菜单和接口封装，按现有 Mock 机制补充数据 |  |
+| 是否执行工程验证 | 按实际命令执行适用检查，验证导航和关键 Mock 交互 |  |
 
 ---
 
@@ -151,7 +157,7 @@ B --> C[页面B]
 - [ ] 暂停生成，我需要补充需求文档
 - [ ] 只生成原型 index，不进入页面代码生成
 - [ ] 生成假设版原型，所有待确认项保留标记
-- [ ] 在 starter-compatible 模式下继续生成 `feature-manifest.json`
+- [ ] 需要工具交接清单，确认索引后继续生成 `feature-manifest.json`
 
 ### 用户补充说明
 
