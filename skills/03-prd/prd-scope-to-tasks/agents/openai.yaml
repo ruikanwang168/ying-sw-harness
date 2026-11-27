@@ -1,0 +1,4 @@
+interface:
+  display_name: "版本功能范围与任务拆分"
+  short_description: "结合版本边界、原型、PRD 与代码生成按故事分组的估工任务和本次功能清单"
+  default_prompt: "使用 $prd-scope-to-tasks，基于本次版本需求边界、原型、PRD 与现有前后端代码，生成任务拆分清单和本次版本全量功能清单，区分新增、修改、删除，人员和预计工时留空。"
