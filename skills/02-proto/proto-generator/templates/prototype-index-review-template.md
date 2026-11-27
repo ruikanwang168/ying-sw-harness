@@ -1,3 +1,9 @@
+---
+last_updated: 2026-11-27
+status: active
+owner: ying
+---
+
 # 原型生成索引确认文档
 
 > 文件名建议：`prototype-index-review.md`  
@@ -16,7 +22,8 @@
 | 判断依据 |  |
 | 是否可用于生成原型 | 是 / 否 / 部分可用 |
 | 工作区模式 | standalone / prototype-starter-compatible |
-| Starter 工作区判断依据 | DESIGN.md / design-system / shared / scripts/new-feature.cjs / 不适用 |
+| Starter 工作区判断依据 | 同时具备 design-system/、shared/ 和 scripts/new-feature.cjs / 不适用 |
+| 设计依据 | DESIGN.md / design.md（可选） / Starter 现有样式；记录实际参考文件 |
 
 ### 1.2 输入成熟度
 
@@ -125,7 +132,8 @@ B --> C[页面B]
 
 | 项目 | 建议 | 用户确认 |
 |---|---|---|
-| 根 DESIGN.md 是否作为设计约束 | 是 |  |
+| 根 DESIGN.md / design.md 是否作为设计约束 | 存在时使用，缺失不阻塞 |  |
+| 缺少设计文档时的样式来源 | 沿用 starter 的共享样式、组件及已有页面或模板 |  |
 | 是否读取 fidelity-guardrails | 是，若文件存在 |  |
 | 是否读取 shared-registry | 是，若文件存在 |  |
 | 是否把确认后的任务转成 feature-manifest.json | 是 |  |

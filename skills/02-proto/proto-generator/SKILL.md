@@ -1,14 +1,15 @@
 ---
 name: proto-generator
-last_updated: 2026-11-26
+last_updated: 2026-11-27
 status: active
 owner: ying
 description: >-
   面向 AI 辅助产品原型生成的流程控制技能。根据需求文档诊断输入、规划页面与交互、
   产出评审文档和执行索引、逐页生成原型，并检查完整性。
   适用于在 Cursor、Codex 或 Claude Code 中，根据 PRD、规格说明、用户故事或需求文档
-  生成多页面原型。可独立使用；当目标目录包含 DESIGN.md、design-system/、shared/
-  和 scripts/new-feature.cjs 时，自动进入 prototype-starter 兼容模式。
+  生成多页面原型。可独立使用；当目标目录包含 design-system/、shared/ 和
+  scripts/new-feature.cjs 时，自动进入 prototype-starter 兼容模式。设计文档可选，
+  缺失时沿用 starter 现有样式。
 ---
 
 # proto-generator
@@ -41,13 +42,14 @@ description: >-
 只有当目标目录包含以下 starter 标志文件和目录时，才将其视为 `prototype-starter` 工作区：
 
 ```text
-DESIGN.md 或 design.md
 design-system/
 shared/
 scripts/new-feature.cjs
 ```
 
-如果这些文件或目录不存在，继续以独立模式执行。不要停下来要求用户运行 `prototype-starter`。
+`DESIGN.md` 或 `design.md` 是可选设计输入，不参与工作区判定；缺失时沿用 starter 的现有样式。
+
+如果上述标志文件或目录不齐全，继续以独立模式执行。不要停下来要求用户运行 `prototype-starter`。
 
 ### 独立模式
 
@@ -67,13 +69,13 @@ scripts/new-feature.cjs
 
 附加规则：
 
-1. 读取根目录的 `DESIGN.md` 或 `design.md`，作为产品设计约束。
+1. 根目录存在 `DESIGN.md` 或 `design.md` 时，读取并作为产品设计约束；不存在时，读取 starter 的共享样式、组件及已有页面或模板，沿用其布局、颜色、字体、间距和交互样式。不得仅因缺少设计文档而要求补充、阻塞生成或切换为独立模式。
 2. 存在 `design-system/fidelity-guardrails.json` 时，读取该文件。
 3. 存在 `design-system/shared-registry.json` 时，读取该文件。
 4. 根据 `prototype-index.md` 中已确认且未受阻的任务生成 `feature-manifest.json`。
 5. 优先使用 `node scripts/new-feature.cjs --manifest <feature-manifest.json>` 创建页面和场景骨架。
 6. 生成的页面必须复用 starter 的共享 CSS/JS 资源。
-7. 生成的页面必须保留 starter 元数据，例如 `data-page-key`、`data-page-kind`、`data-parent-page-key`、`data-surface`、`data-design-source-sha` 和 `data-design-contract-version`。
+7. 生成的页面必须保留 starter 元数据，例如 `data-page-key`、`data-page-kind`、`data-parent-page-key` 和 `data-surface`。设计源信息（如 `data-design-source-sha`、`data-design-contract-version`）按 starter 实际提供的值保留；缺少设计文档时不得伪造哈希或版本。
 8. 存在相应脚本时，运行 `node scripts/check-prototype-compliance.cjs`。
 9. 在最终完整性检查中，同时验证需求覆盖情况和 starter 兼容性。
 
@@ -532,7 +534,7 @@ AI 不得默默跳过任务。
 4. 将抽屉、模态弹窗、侧边面板、确认交互、导入向导及其他独立界面转换为其父页面下的 `scenarios[]`。
 5. 为每个场景保留 `parentPageKey`。
 6. 包含 `sourceTaskIds`，使完整性检查能够将清单条目追溯到索引任务。
-7. 当任务对应根目录 `DESIGN.md` 中的模式或 `design-system/shared-registry.json` 中的条目时，包含 `designPatternRefs`。
+7. 当任务对应已存在的 `DESIGN.md` / `design.md` 中的模式或 `design-system/shared-registry.json` 中的条目时，包含 `designPatternRefs`；缺少这些来源时，沿用 starter 现有样式，不编造模式引用。
 8. 除非用户明确选择了 `draft` 模式，否则不得将不确定的任务或已推断但未确认的任务放入清单。
 
 starter 兼容模式下的最小清单示例：

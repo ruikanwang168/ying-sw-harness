@@ -1,3 +1,9 @@
+---
+last_updated: 2026-11-27
+status: active
+owner: ying
+---
+
 # Prototype Completeness Check
 
 > 文件名建议：`prototype-completeness-check.md`  
@@ -94,8 +100,9 @@
 | 阻塞任务是否排除 manifest | `Needs Confirmation` / `Needs Input` 不应进入 manifest，除非用户选择 draft |  | 已通过 / 异常 / 不适用 |
 | 页面是否由 starter 骨架生成 | 可用时应使用 `node scripts/new-feature.cjs --manifest` |  | 已通过 / 未使用 / 不适用 |
 | 页面是否引用 shared CSS/JS | 页面应复用 starter 的共享资源 |  | 已通过 / 缺失 / 不适用 |
+| 页面是否遵循设计依据 | 有设计文档时遵循文档；缺失时沿用 starter 现有样式，并记录参考文件 |  | 已通过 / 异常 / 不适用 |
 | 页面是否有稳定元数据 | `data-page-key`、`data-page-kind`、`data-surface` 等应存在 |  | 已通过 / 缺失 / 不适用 |
-| 页面是否携带设计源信息 | `data-design-source-sha` 和 `data-design-contract-version` 应存在 |  | 已通过 / 缺失 / 不适用 |
+| 页面是否携带设计源信息 | 按 starter 实际提供的值保留 `data-design-source-sha` 和 `data-design-contract-version`；未提供时标记不适用，不伪造 |  | 已通过 / 缺失 / 不适用 |
 | 是否运行 compliance | 应运行 `node scripts/check-prototype-compliance.cjs` |  | 已通过 / 未运行 / 不适用 |
 
 ---

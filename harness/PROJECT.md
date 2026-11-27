@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-25
+last_updated: 2026-11-27
 status: active
 owner: ying
 ---
@@ -43,7 +43,7 @@ ying-sw-harness/
     ├── CLAUDE.md                     # 既有 Claude Code 局部入口
     ├── rule.md                       # 所有 Skill 的编写标准
     ├── 01-disc/
-    │   ├── disc-xuqiu/               # name 为 xuqiu-analyzer；需求澄清与 PRD
+    │   ├── disc-xuqiu/               # name 为 disc-xuqiu；需求澄清与 PRD
     │   │   ├── SKILL.md
     │   │   ├── README.md
     │   │   └── references/

@@ -1,3 +1,9 @@
+---
+last_updated: 2026-11-27
+status: active
+owner: ying
+---
+
 # Prototype Index
 
 > 文件名建议：`prototype-index.md`  
@@ -18,7 +24,8 @@
 | 设计规范 |  |
 | 项目目录 |  |
 | 工作区模式 | standalone / prototype-starter-compatible |
-| 根 DESIGN.md | 有 / 无 / 不适用 |
+| 根 DESIGN.md / design.md（可选） | 有 / 无 / 不适用 |
+| 设计依据 | 设计文档 / Starter 现有样式；记录实际参考文件 |
 | Starter 共享资产 | 有 / 无 / 不适用 |
 | Manifest 文件 | feature-manifest.json / 不适用 |
 | 执行模式 | interactive / auto / review-first / strict / draft |
@@ -35,7 +42,7 @@
 6. 生成页面后，必须记录生成文件。
 7. 如果发现遗漏页面或交互，必须新增任务，并标记为 `Needs Confirmation`。
 8. 不得私自删除 index 中的任务。
-9. 如果发现目标项目是 prototype-starter 工作区，必须读取根 `DESIGN.md`、`design-system/fidelity-guardrails.json` 和 `design-system/shared-registry.json`。
+9. 在 prototype-starter 工作区中，根 `DESIGN.md` / `design.md`、`design-system/fidelity-guardrails.json` 和 `design-system/shared-registry.json` 存在时读取；缺少设计文档时，读取并沿用 starter 的共享样式、组件及已有页面或模板，不阻塞生成。
 10. 在 prototype-starter-compatible 模式下，已确认且无阻塞的任务必须同步生成到 `feature-manifest.json`。
 11. 在 prototype-starter-compatible 模式下，优先使用 `node scripts/new-feature.cjs --manifest feature-manifest.json` 创建页面和独立场景骨架。
 12. 所有任务完成后，必须执行完整性检查。
@@ -99,7 +106,8 @@ B --> C[页面B]
 
 | 检查项 | 要求 | 当前状态 |
 |---|---|---|
-| 是否读取根 DESIGN.md | prototype-starter-compatible 模式必须读取 | 已读取 / 未读取 / 不适用 |
+| 是否读取根 DESIGN.md / design.md | 存在时读取，缺失不阻塞 | 已读取 / 未读取 / 不适用 |
+| 缺少设计文档时是否沿用 Starter 样式 | 读取并复用共享样式、组件及已有页面或模板 | 已沿用 / 未沿用 / 不适用 |
 | 是否读取 fidelity-guardrails | 存在时必须读取 | 已读取 / 未读取 / 不适用 |
 | 是否读取 shared-registry | 存在时必须读取 | 已读取 / 未读取 / 不适用 |
 | 是否生成 feature-manifest.json | starter-compatible 模式且 index 已确认时必须生成 | 已生成 / 未生成 / 不适用 |

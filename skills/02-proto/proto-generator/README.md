@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-26
+last_updated: 2026-11-27
 status: active
 owner: ying
 ---
@@ -19,8 +19,9 @@ owner: ying
 
 这个 skill 可以独立使用，也可以和 `prototype-starter` 协同使用，但不强依赖 `prototype-starter`：
 
-- 如果目标目录没有 `DESIGN.md`、`design-system/`、`shared/`、`scripts/new-feature.cjs`，按 standalone 模式生成原型。
-- 如果目标目录存在这些 starter 工作区信号，自动进入 prototype-starter-compatible 模式：读取根 `DESIGN.md` 和 starter 护栏，生成 `feature-manifest.json`，优先通过 `scripts/new-feature.cjs --manifest` 创建页面骨架，并运行 starter compliance。
+- 如果目标目录未同时具备 `design-system/`、`shared/`、`scripts/new-feature.cjs`，按 standalone 模式生成原型。
+- 如果目标目录具备上述三项 starter 工作区信号，自动进入 prototype-starter-compatible 模式：读取存在的 starter 护栏，生成 `feature-manifest.json`，优先通过 `scripts/new-feature.cjs --manifest` 创建页面骨架，并在检查脚本存在时运行 starter compliance。
+- 根目录的 `DESIGN.md` 或 `design.md` 可选：存在时作为设计约束；不存在时读取并复用 starter 的共享样式、组件及已有页面或模板，沿用现有样式，不要求补充设计文档，也不因此退出兼容模式。
 - `proto-generator` 负责防止漏页面、漏弹窗、漏抽屉、漏路由；`prototype-starter` 负责设计系统一致性和工程结构约束。
 
 ## 最终输出是什么？

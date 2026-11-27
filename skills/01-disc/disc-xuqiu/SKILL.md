@@ -1,5 +1,8 @@
 ---
-name: xuqiu-analyzer
+name: disc-xuqiu
+last_updated: 2026-11-27
+status: active
+owner: ying
 description: |
   把模糊需求梳理成可执行的需求分析结果，支持从零模式和增量模式，
   并按需要生成两类文档：
